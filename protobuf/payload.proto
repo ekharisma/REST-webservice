@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package payload;
+
+message Payload {
+    int32 temperature = 1;
+    string timestamp = 2;
+    int32 id = 3;
+}
