@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"ekharisma/challenge/controller"
+	"log"
+	"net/http"
+)
+
+func handleEndpoint() {
+	http.HandleFunc("/sensor/latest", controller.LatestTemperature)
+	http.HandleFunc("/sensor/min", controller.MinTemperature)
+	http.HandleFunc("/sensor/max", controller.MaxTemperature)
+}
 
 func main() {
-	fmt.Println("Hello World")
+	handleEndpoint()
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
