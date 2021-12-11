@@ -1,50 +1,29 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
-	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"ekharisma/challenge/controller"
+	"log"
+	"net/http"
 )
 
-var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	fmt.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
-}
-var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
-	fmt.Println("Connected")
-}
-var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-	fmt.Printf("Connect lost: %v", err)
+const broker = "broker.hivemq.com:1883"
+
+const topic = "iot/thermostat"
+
+// var message string = ""
+
+func handleFunc() {
+	http.HandleFunc("/sensor/latest", controller.LatestTemperature)
+	http.HandleFunc("/sensor/min", controller.MinTemperature)
+	http.HandleFunc("/sensor/max", controller.MaxTemperature)
 }
 
 func main() {
-	var broker = "broker.hivemq.com"
-	var port = 1883
-	opts := mqtt.NewClientOptions()
-	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port))
-	opts.SetDefaultPublishHandler(messagePubHandler)
-	opts.OnConnect = connectHandler
-	opts.OnConnectionLost = connectLostHandler
-	client := mqtt.NewClient(opts)
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
+	handleFunc()
+	// go consumeMQTT()
+	client := controller.MQTTInit(broker)
+	if token := client.Subscribe(topic, 0, controller.ConsumeMQTT); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
-	sub(client)
-	publish(client)
-	client.Disconnect(250)
-}
-func publish(client mqtt.Client) {
-	num := 10
-	for i := 0; i < num; i++ {
-		text := fmt.Sprintf("Message %d", i)
-		token := client.Publish("topic/test", 0, false, text)
-		token.Wait()
-		time.Sleep(time.Second)
-	}
-}
-func sub(client mqtt.Client) {
-	topic := "iot/thermostat"
-	token := client.Subscribe(topic, 1, nil)
-	token.Wait()
-	fmt.Printf("Subscribed to topic: %s\n", topic)
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
