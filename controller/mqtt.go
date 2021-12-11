@@ -12,7 +12,6 @@ import (
 
 func parseMessage(message []byte) (int, int, string) {
 	pl := &payload.Payload{}
-	// var payload []byte
 	if err := proto.Unmarshal(message, pl); err != nil {
 		log.Fatal("Failed to parse message from MQTT: ", err)
 	}
@@ -24,6 +23,7 @@ func ConsumeMQTT(client mqtt.Client, message mqtt.Message) {
 	fmt.Println("id ", id)
 	fmt.Println("temperature: ", temperature)
 	fmt.Println("Received at: ", timestamp)
+	SetLatestTemperature(temperature)
 }
 
 func MQTTInit(broker string) mqtt.Client {
