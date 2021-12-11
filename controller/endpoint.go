@@ -10,7 +10,7 @@ import (
 type Payload struct {
 	Id          int
 	Temperature int
-	timestamp   string
+	Timestamp   string
 }
 
 var id int = 0
@@ -19,7 +19,7 @@ func buildPayload(temperature int) string {
 	payload := Payload{
 		Id:          id,
 		Temperature: temperature,
-		timestamp:   time.Now().String(),
+		Timestamp:   time.Now().String(),
 	}
 	respond, err := json.MarshalIndent(payload, "", " ")
 	if err != nil {
