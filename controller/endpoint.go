@@ -29,14 +29,21 @@ func buildPayload(temperature int) string {
 	return string(respond)
 }
 
+func enableCORS(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func LatestTemperature(w http.ResponseWriter, r *http.Request) {
+	enableCORS(&w)
 	fmt.Fprintf(w, "%s", buildPayload(latestTemperature))
 }
 
 func MinTemperature(w http.ResponseWriter, r *http.Request) {
+	enableCORS(&w)
 	fmt.Fprintf(w, "%s", buildPayload(minTemperature))
 }
 
 func MaxTemperature(w http.ResponseWriter, r *http.Request) {
+	enableCORS(&w)
 	fmt.Fprintf(w, "%s", buildPayload(maxTemperature))
 }

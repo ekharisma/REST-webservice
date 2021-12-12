@@ -1,5 +1,12 @@
 # REST API Webservice
 
+>Heads Up!
+
+This project enable CORS by default, if you intend to disable it, comment this line of code on controller/endpoint.go:
+```
+enableCORS(&w)
+```
+
 ## Setup
 
 Clone this repository:
